@@ -65,7 +65,7 @@ void fillTable(DPTable *T){
           T->assign(x, y, 1);
         }
         else{
-          if ( T -> inputS[x-1] ==  T -> inputS[y-1]){
+          if ( T -> inputS[x] ==  T -> inputS[y]){
             // (*T->table)[y][x] =  (*T->table)[y+1][x-1] + 2;
             T->assign(x, y, T->read(x-1, y+1) + 2);
           }
