@@ -42,7 +42,11 @@ public:
   void printTable(){
     for (int y = 0; y < sLength; y++){
       for(int x = 0; x <sLength; x++){
-        std::cout << "( " << x << ", " << y << " ) = " << read(x, y) << "\n";
+        // std::cout << "( " << x << ", " << y << " ) = " << read(x, y);
+        std::cout << read(x,y) << ", ";
+        if (x == sLength - 1){
+          std::cout<<"\n";
+        }
       }
     }
   }
