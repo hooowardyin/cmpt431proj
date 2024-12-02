@@ -3,10 +3,14 @@
 #include <stdlib.h>
 #include <vector>
 #include "get_time.h"
+#include <fstream>
+#include <sstream>
+#include <string>
 
 // #define sqr(x) ((x) * (x))
 #define DEFAULT_S "CMPT431-2024FALL"
 #define DEFAULT_NUMBER_OF_PROCESS "1"
+#define DEFAULT_INPUT_FILE "input.txt"
 
 class DPTable
 {
@@ -81,7 +85,7 @@ void fillTable(DPTable *T){
   }
 }
 
-uint longestPalindromeSubseq(DPTable *T, uint nProcess) {
+uint longestPalindromeSubseq(DPTable *T) {
 
   timer serialTimer;
   serialTimer.start();
@@ -103,47 +107,40 @@ uint longestPalindromeSubseq(DPTable *T, uint nProcess) {
 
 // args: inputS, nProcess,
 //  -- inputS: the original input string to check longest sub sequence parlindrom. default value: "CMPT431-2024FALL"
-//  -- nProcess: number of forked process. default value: 1
-
 
 int main(int argc, char *argv[]) {
 
   // Initialize command line arguments
 
   std::string inputS;
-  uint nProcess;
+  std::ifstream inputFile;
 
-  if(argc > 3){
-    std::cout << "number of args is not correct for the program (1. inputS, 2. nProcess)\n";
+  if(argc > 2){
+    std::cout << "number of args is not correct for the program (1. inputFile)\n";
     exit(1);
   }
 
   if(argc == 1){
-    inputS = DEFAULT_S;
-    nProcess = std::stoi(DEFAULT_NUMBER_OF_PROCESS);
+    inputFile.open(DEFAULT_INPUT_FILE);
   }
-
-  else if(argc == 2){
-    inputS = argv[1];    
-    nProcess = std::stoi(DEFAULT_NUMBER_OF_PROCESS);
-  }
-
   else{
-    inputS = argv[1];
-    nProcess = std::stoi(argv[2]);
+    inputFile.open(argv[1]);
   }
+  
+  std::string fileContents((std::istreambuf_iterator<char>(inputFile)),
+                             std::istreambuf_iterator<char>());
 
-  DPTable *DBT = new DPTable(inputS);
 
-  std::cout << "the input string is: " << inputS << "\n";;
-  std::cout << "the number of process is: " << nProcess << "\n";
+  inputFile.close();
+  DPTable *DBT = new DPTable(fileContents)  ;
+  std::cout << " input string have a length of " << DBT -> sLength <<"\n";
 
-//  uint length = longestPalindromeSubseq(inputS, nProcess);
-  uint length = longestPalindromeSubseq(DBT, nProcess);
+
+  uint length = longestPalindromeSubseq(DBT);
+  std::cout << "The longest palindrome subsequence has a length of: " << length << "\n";
   // DBT->printTable();
   delete DBT;
 
-  std::cout << "the longest palindrome subseq has a length of: " << length << "\n";
 
   return 0;
 }
