@@ -1,5 +1,10 @@
 readme:
 
+0. Run the following command to compile the code:
+
+   tar xvzf proj.tar.gz
+   make
+
 1. the input files are located in the input/ folder
    each text file contains a string with Alphanumeric ONLY. that is the input constraint.
 
@@ -23,6 +28,7 @@ readme:
    nThread: number of threads   
 
    c. MPI: mpirun -n nProcess ./LSSP_mpi inputFilePath
+
    inputFilePath: the path to the inputFile
    nProcess: number of process
 
