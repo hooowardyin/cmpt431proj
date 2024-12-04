@@ -27,7 +27,7 @@ public:
 
     DPTable(std::string s) {    // create the DPTable based on the input string
         inputS = s;
-        sLength = inputS.size();
+        sLength = inputS.size() - 1;
         table = new std::vector< std::vector <int> >(sLength, std::vector<int>(sLength, 0));
 
 
