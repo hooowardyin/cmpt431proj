@@ -60,97 +60,115 @@ public:
 
 
 void fillTableThread(DPTable* T, uint startCol, uint endCol, int threadCount, int threadId, std::vector<double>& time_each_threads) {
+    // Timer to measure the time taken by each thread
     timer threadTimer;
     threadTimer.start();
     double threadTimeTaken;
 
+    // Iterate through the rows of the DP table (bottom to top)
     for (int y = T->sLength - 1; y >= 0; y--) {
+        // Iterate through the columns assigned to this thread
         for (int x = startCol; x <= endCol; x++) {
             if (y > x) {
+                // Skip cells above the diagonal (not needed for palindrome subsequences)
                 continue;
             }
 
             if (x == y) {
+                // Diagonal cells (base case): A single character is a palindrome of length 1
                 T->assign(x, y, 1);
             }
             else if (x == y + 1) {
+                // Cells directly above the diagonal: Compare two adjacent characters
                 if (T->inputS[x] == T->inputS[y]) {
-                    T->assign(x, y, 2);
+                    T->assign(x, y, 2); // Characters match, palindrome length is 2
                 }
                 else {
-                    T->assign(x, y, 1);
+                    T->assign(x, y, 1); // Characters do not match, length is 1
                 }
             }
             else {
-                // Wait for left and bottom-left dependencies
+                // For other cells, calculate the value based on dependencies:
+                // Wait for the left and bottom-left dependencies to be ready
                 while (x > startCol && T->read(x - 1, y) == 0) {
-                    std::this_thread::yield();
+                    std::this_thread::yield(); // Yield to allow other threads to make progress
                 }
                 while (y + 1 < T->sLength && T->read(x, y + 1) == 0) {
                     std::this_thread::yield();
                 }
 
+                // Retrieve the values of dependencies
                 int left = T->read(x - 1, y);
                 int bot = T->read(x, y + 1);
                 if (T->inputS[x] == T->inputS[y]) {
+                    // Characters match, add 2 to the value of the bottom-left dependency
                     int leftBot = T->read(x - 1, y + 1);
                     T->assign(x, y, leftBot + 2);
                 }
                 else {
+                    // Characters do not match, take the maximum of left or bottom dependency
                     T->assign(x, y, std::max(left, bot));
                 }
             }
         }
     }
+    // Stop the timer for this thread and record the time taken
     threadTimeTaken = threadTimer.stop();
     time_each_threads[threadId] = threadTimeTaken;
 }
 
 uint longestPalindromeSubseq(DPTable* T, uint nThreads) {
-
+    // Timer to measure the total execution time for all threads
     timer parallelTimer;
     parallelTimer.start();
     double timeTaken;
 
-    // ----------- serial OR multi_thread OR MPI ----------------- //
-    //fillTableParallel(T, nThreads);
+    // Create threads for parallel computation
     std::vector<std::thread> threads;
     uint sLength = T->sLength;
 
-    uint subCols = sLength / nThreads;
-    uint extraCols = sLength % nThreads;
+    // Divide the DP table columns among threads
+    uint subCols = sLength / nThreads;       // Base number of columns per thread
+    uint extraCols = sLength % nThreads;    // Extra columns to distribute among the first few threads
 
+    // Store the start and end columns for each thread
     std::vector<uint> threadStartCol(nThreads);
     std::vector<uint> threadEndCol(nThreads);
 
-    std::vector<double> time_each_threads(nThreads, 0.0); // To record the time for each thread
+    // Vector to record the time taken by each thread
+    std::vector<double> time_each_threads(nThreads, 0.0);
 
+    // Create and launch threads
     for (uint i = 0; i < nThreads; i++) {
+        // Calculate the start and end columns for this thread
         uint startCol = i * subCols + std::min(i, extraCols);
         uint endCol = startCol + subCols - 1 + (i < extraCols ? 1 : 0);
         threadStartCol[i] = startCol;
         threadEndCol[i] = endCol;
 
+        // Launch the thread with its assigned range of columns
         threads.emplace_back(fillTableThread, T, startCol, endCol, nThreads, i, std::ref(time_each_threads));
     }
 
+    // Wait for all threads to finish
     for (auto& th : threads) {
         th.join();
     }
 
+    // Print timing information for each thread
     std::cout << "threadId, timeTaken, startCol, endCol" << std::endl;
     for (uint i = 0; i < nThreads; i++) {
         std::cout << i << ", " << time_each_threads[i] << ", " << threadStartCol[i] << ", " << threadEndCol[i] << "\n";
     }
 
-
+    // Stop the total timer and print the total execution time
     timeTaken = parallelTimer.stop();
-    std::cout << "total time using(in seconds): "
-        << timeTaken << "\n";
+    std::cout << "Total time using (in seconds): " << timeTaken << "\n";
 
-    // return (*T->table)[0][T->sLength-1];
+    // Return the result from the top-right cell of the DP table
     return T->read((T->sLength) - 1, 0);
 }
+
 
 
 // args: inputS, nThreads,
