@@ -11,7 +11,7 @@
 
 
 
-#define DEFAULT_INPUT_FILE "input/input.txt"
+#define DEFAULT_INPUT_FILE "input/big.txt"
 
 class DPTable
 {

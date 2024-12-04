@@ -11,7 +11,7 @@
 // #define sqr(x) ((x) * (x))
 //#define DEFAULT_S "CMPT431-2024FALL"
 #define DEFAULT_NUMBER_OF_THREADS "1"
-#define DEFAULT_INPUT_FILE "input/input.txt"
+#define DEFAULT_INPUT_FILE "input/big.txt"
 
 class DPTable
 {
