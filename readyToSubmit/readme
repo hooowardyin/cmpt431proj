@@ -1,0 +1,28 @@
+readme:
+
+1. the input files are located in the input/ folder
+   each text file contains a string with Alphanumeric ONLY. that is the input constraint.
+
+   OR you can use the free website to generate custom input:
+   https://www.text-utils.com/remove-special-characters/
+   then copy the generated result to a file.
+   (NOTE: you need to select the "Keep alphanumeric only" option)
+
+   the output samples are located in the output/ folder
+
+2. after make, to run the code:
+
+   a. serial: ./LSSP_serial inputFilePath
+
+   inputFilePath: the path to the inputFile
+
+
+   b. multiThread: ./LSSP_parallel inputFilePath nThread
+
+   inputFilePath: the path to the inputFile
+   nThread: number of threads   
+
+   c. MPI: mpirun -n nProcess ./LSSP_mpi inputFilePath
+   inputFilePath: the path to the inputFile
+   nProcess: number of process
+

@@ -1,0 +1,3 @@
+./LSSP_serial input/small.txt 
+total time using(in seconds): 0.080513
+the longest palindrome subseq has a length of: 2635
