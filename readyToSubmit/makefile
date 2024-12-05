@@ -36,8 +36,12 @@ $(TARGET_serial): $(OBJ_serial)
 $(TARGET_parallel): $(OBJ_parallel)
 	$(CXX) $(CXXFLAGS) $(LDFLAGS_PARALLEL) -o $@ $^
 
-# Rule to compile .cpp files to .o files
-%.o: %.cpp
+# Rule to compile MPI .cpp files into .o files
+$(OBJ_mpi): %.o: %.cpp
+	$(MPICXX) $(CXXFLAGS) -c $< -o $@
+
+# Rule to compile serial and parallel .cpp files into .o files
+$(OBJ_serial) $(OBJ_parallel): %.o: %.cpp
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
 # Clean up generated files
